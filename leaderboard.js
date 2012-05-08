@@ -3,6 +3,18 @@
 
 Players = new Meteor.Collection("players");
 
+initDB = function(db) {
+      var names = ["Ada Lovelace",
+                   "Grace Hopper",
+                   "Marie Curie",
+                   "Carl Friedrich Gauss",
+                   "Nikola Tesla",
+                   "Claude Shannon"];
+    db.remove({});
+    for (var i = 0; i < names.length; i++)
+        db.insert({name: names[i], score: Math.floor(Math.random()*10)*5});
+};
+
 if (Meteor.is_client) {
   Template.leaderboard.players = function () {
     return Players.find({}, {sort: {score: -1, name: 1}});
@@ -34,14 +46,7 @@ if (Meteor.is_client) {
 if (Meteor.is_server) {
   Meteor.startup(function () {
     if (Players.find().count() === 0) {
-      var names = ["Ada Lovelace",
-                   "Grace Hopper",
-                   "Marie Curie",
-                   "Carl Friedrich Gauss",
-                   "Nikola Tesla",
-                   "Claude Shannon"];
-      for (var i = 0; i < names.length; i++)
-        Players.insert({name: names[i], score: Math.floor(Math.random()*10)*5});
+	initDB(Players);
     }
   });
 }
